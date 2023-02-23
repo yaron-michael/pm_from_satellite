@@ -15,13 +15,57 @@ import geopandas as gpd
 import numpy
 import rioxarray
 import xarray
-import geopandas as gpd
 import rasterstats
 import os
 import glob
 from shapely.geometry import mapping
+import scipy
+import itertools
+import rasterio
+from shapely.geometry import box
 
-gdf = gpd.read_file('/content/to_test.shp')
+
+
+
+#make the grid for the Percentage calculation
+
+#https://gis.stackexchange.com/questions/329507/converting-a-raster-pixel-by-pixel-to-vector-cells-in-python
+
+
+
+
+#with rasterio.open('/content/500M_WG84.tif') as dataset:
+with rasterio.open('/content/AOT_ISERAL_ALL_2039.tif') as dataset:  
+    data = dataset.read(1)
+
+    t = dataset.transform
+
+    move_x = t[0]
+    # t[4] is negative, as raster start upper left 0,0 and goes down
+    # later for steps calculation (ymin=...) we use plus instead of minus
+    move_y = t[4]
+
+    height = dataset.height
+    width = dataset.width 
+
+    polygons = []
+    indices = list(itertools.product(range(width), range(height)))
+    for x,y in indices:
+        x_min, y_max = t * (x,y)
+        x_max = x_min + move_x
+        y_min = y_max + move_y
+        polygons.append(box(x_min, y_min, x_max, y_max))
+
+
+data_list = []
+for x,y in indices:
+    data_list.append(data[y,x])
+
+
+gdf = gpd.GeoDataFrame(data=data_list, crs={'init':'epsg:4236'}, geometry=polygons, columns=['value'])
+gdf.to_file('930_2039.shp', driver='ESRI Shapefile')
+
+
 gdf = gpd.read_file('/content/930_2039.shp')
 raster = "/content/LAND_USE_2014.tif"
 raster = "/content/TEST4.tif"
