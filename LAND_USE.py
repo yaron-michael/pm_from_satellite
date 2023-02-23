@@ -27,14 +27,13 @@ import itertools
 import rasterio
 from shapely.geometry import box
 
-#P
-#
+##parameters
 raster_to_grid = '/content/AOT_ISERAL_ALL_2039.tif'
 grid = '930_2039.shp'
 raster = "/content/LAND_USE_2014_4CLASS_2039_.tif" #LAND USE RASTER
 resolution_X = 930
 resolution_Y = 930
-#P
+#parameters
 
 
 
