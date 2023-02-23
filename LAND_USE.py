@@ -4,6 +4,9 @@ Created on Wed Feb 22 02:27:11 2023
 #
 @author: yaron.michael
 """
+#MAKE LAND USE RASTER ON ARCGIS PRO
+#out_raster = arcpy.sa.Reclassify("land_use2014g.img", "Value", "1 1;2 1;3 1;4 1;5 1;6 1;7 1;8 1;9 1;10 2;11 2;12 2;13 2;14 2;15 2;16 2;17 2;18 2;20 1;21 1;22 2;23 2;24 2;25 2;26 2;27 2;28 2;29 2;31 2;32 4;33 4;34 4;35 3;36 3;37 4;38 4;39 4", "DATA"); out_raster.save(r"D:\New Folder (2)\LAND_USE_2014_4CLASS.tif")
+
 
 #https://zia207.github.io/geospatial-python.io/lesson_06_working-with-raster-data.html
 #SEE IN Convert Point Data to Raster
@@ -24,6 +27,14 @@ import itertools
 import rasterio
 from shapely.geometry import box
 
+#P
+#
+raster_to_grid = '/content/AOT_ISERAL_ALL_2039.tif'
+grid = '930_2039.shp'
+raster = "/content/LAND_USE_2014_4CLASS_2039_.tif" #LAND USE RASTER
+resolution_X = 930
+resolution_Y = 930
+#P
 
 
 
@@ -33,9 +44,7 @@ from shapely.geometry import box
 
 
 
-
-#with rasterio.open('/content/500M_WG84.tif') as dataset:
-with rasterio.open('/content/AOT_ISERAL_ALL_2039.tif') as dataset:  
+with rasterio.open(raster_to_grid) as dataset:  
     data = dataset.read(1)
 
     t = dataset.transform
@@ -63,20 +72,10 @@ for x,y in indices:
 
 
 gdf = gpd.GeoDataFrame(data=data_list, crs={'init':'epsg:2039'}, geometry=polygons, columns=['value'])
-gdf.to_file('930_2039.shp', driver='ESRI Shapefile')
+gdf.to_file(grid, driver='ESRI Shapefile')
 
-#MAKE LAND USE RASTER ON ARCGIS PRO
-#out_raster = arcpy.sa.Reclassify("land_use2014g.img", "Value", "1 1;2 1;3 1;4 1;5 1;6 1;7 1;8 1;9 1;10 2;11 2;12 2;13 2;14 2;15 2;16 2;17 2;18 2;20 1;21 1;22 2;23 2;24 2;25 2;26 2;27 2;28 2;29 2;31 2;32 4;33 4;34 4;35 3;36 3;37 4;38 4;39 4", "DATA"); out_raster.save(r"D:\New Folder (2)\LAND_USE_2014_4CLASS.tif")
-from geocube.api.core import make_geocube
-#P
-#gdf = gpd.read_file('/content/to_test.shp')
-gdf = gpd.read_file('/content/930_2039.shp')
+gdf = gpd.read_file(grid)
 
-raster = "/content/LAND_USE_2014_4CLASS_2039_.tif"
-#raster = "/content/TEST4.tif"
-resolution_X = 930
-resolution_Y = 930
-#P
 dic= rasterstats.zonal_stats(vectors=gdf['geometry'], raster=raster, categorical=True)#the code igonre nan vale like sea
 #ADD ID
 
@@ -111,5 +110,5 @@ gdf_redy
 
 land_use_list = ["land_1","land_2","land_3","land_4"]
 for land in land_use_list:
- out_grid= make_geocube(vector_data=gdf_redy, measurements=[land], resolution=(930, 930)) #for most crs negative comes first in resolution
+ out_grid= make_geocube(vector_data=gdf_redy, measurements=[land], resolution=(resolution_X, resolution_Y)) 
  out_grid[land].rio.to_raster(land+".tif")
