@@ -62,7 +62,7 @@ for x,y in indices:
     data_list.append(data[y,x])
 
 
-gdf = gpd.GeoDataFrame(data=data_list, crs={'init':'epsg:4236'}, geometry=polygons, columns=['value'])
+gdf = gpd.GeoDataFrame(data=data_list, crs={'init':'epsg:2039'}, geometry=polygons, columns=['value'])
 gdf.to_file('930_2039.shp', driver='ESRI Shapefile')
 
 
