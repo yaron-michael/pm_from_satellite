@@ -1,0 +1,31 @@
+railway_line = "railroads_l"
+major_road_line = "major_roads_l"
+highways_line =  "highways_l"
+all_road = "all_road"
+output_dir = "C:\\AOT\\"
+raster_of_total_road_density_raster_temp = "C:\\AOT\\temp_raster.tif"
+total_road_density_raster = "C:\\AOT\\total_road_density_raster_zone.tif"
+
+
+AOT_raster_of_tile_h20v05 = ["C:\\AOT\\New folder (2)\\h20v05_AOT_raster.tif","C:\\AOT\\New folder (2)\\h20v05_AOT_raster.tif"]
+#tilelist = ["h20v05_AOT_raster"]
+#tilelist = [1,2,3]
+for tile in AOT_raster_of_tile_h20v05:
+    print(tile)
+    arcpy.conversion.RasterToPoint(tile, "P_railroads", "Value")
+    arcpy.conversion.RasterToPoint(tile, "P_major_road", "Value")
+    arcpy.conversion.RasterToPoint(tile, "P_highways", "Value")
+    #THIS IS near for railway  
+    arcpy.analysis.Near("P_railroads", railway_line, None, "NO_LOCATION", "NO_ANGLE", "PLANAR", "NEAR_FID NEAR_FID;NEAR_DIST NEAR_DIST")
+    arcpy.conversion.PointToRaster("P_railroads", "NEAR_DIST", output_dir+"P_railroads"+".tif", "MEAN", "NONE", tile, "BUILD")
+    #THIS IS near for major roads
+    arcpy.analysis.Near("P_major_road", major_road_line, None, "NO_LOCATION", "NO_ANGLE", "PLANAR", "NEAR_FID NEAR_FID;NEAR_DIST NEAR_DIST")
+    arcpy.conversion.PointToRaster("P_major_road", "NEAR_DIST", output_dir+"P_major_road"+".tif", "MEAN", "NONE", tile, "BUILD")
+    #THIS IS near for highways
+    arcpy.analysis.Near("P_highways", highways_line, None, "NO_LOCATION", "NO_ANGLE", "PLANAR", "NEAR_FID NEAR_FID;NEAR_DIST NEAR_DIST")
+    arcpy.conversion.PointToRaster("P_major_road", "NEAR_DIST", output_dir+"P_major_road"+".tif", "MEAN", "NONE", tile, "BUILD")
+ #  arcpy.conversion.PointToRaster("P_highways", "NEAR_DIST", r"C:\Users\yaron.michael\Documents\ArcGIS\Projects\MyProject38\MyProject38.gdb\RasterT_20200521_PointToRaster", "MEAN", "NONE", r"C:\AOT\TEMP.tif", "BUILD")
+    #now let do the
+    out_raster = arcpy.sa.LineDensity(all_road, "NONE", 930, 465, "SQUARE_METERS")
+    out_raster.save(raster_of_total_road_density_raster)
+    out_raster = arcpy.sa.ZonalStatistics(tile, "Value", raster_of_total_road_density_raster, "MEAN", "DATA", "CURRENT_SLICE", 90, "AUTO_DETECT"); out_raster.save(total_road_density_raster)
