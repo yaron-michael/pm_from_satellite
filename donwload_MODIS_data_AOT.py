@@ -47,7 +47,7 @@ for date_vale in dates_list:
     b1 = b.strftime('%Y-%m-%d')
 
     
-#Israel_granules = granule_client.query(start_date="2017-01-01", end_date="2017-01-02", bounding_box=AOT)
+
     Israel_granules = granule_client.query(start_date=a1, end_date=b1, bounding_box=AOT)
     # Download the granules
     
