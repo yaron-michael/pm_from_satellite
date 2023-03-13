@@ -1,12 +1,14 @@
-#each modeis tiil have in the aot VALE 4 band -each band is a diifndt hour
-#to deonloas pbl https://herbie.readthedocs.io/en/latest/index.html
-#need to add the ablity to retry download 
+#each modeis tiil have in the AOT VALE  3.4 band -each band is a different time
+#Couldn't add retry download if failed (NASA's server is stable) 
+
+
 from modis_tools.auth import ModisSession
 from modis_tools.resources import CollectionApi, GranuleApi
 from modis_tools.granule_handler import GranuleHandler
 import datetime
 from datetime import timedelta 
 import os
+
 #parameters
 AOT = [33, 28 , 38,36.00] #bounding_box
 download_data_to ='C:/2019/'
@@ -14,8 +16,6 @@ username = "yaron1205"
 password = "RFEx3LKsWX1z"
 start_date = datetime.date(2019, 1, 1)
 end_date   = datetime.date(2020, 1, 1)
-
-
 #parameters
 
 def alt_elem(list, index=2):
