@@ -42,10 +42,6 @@ for date_vale in dates_list:
 
 # Query the selected collection for granules
     granule_client = GranuleApi.from_collection(collections[0], session=session)
-   # print(dates_to_loop[i])
-    #a = dates_to_loop[i]
-    #b = dates_to_loop[i + 1]
-    #print(dates_to_loop[i + 1])
     print(a)
     a1 = a.strftime('%Y-%m-%d')
     b1 = b.strftime('%Y-%m-%d')
