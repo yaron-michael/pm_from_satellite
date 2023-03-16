@@ -4,3 +4,6 @@ Internally, Salem uses pyproj for the coordinates transformation and scipy’s
 interpolation methods for the resampling. Note that reprojecting data can be
 computationally and memory expensive: it is generally recommended to reproject
 your data at the end of the processing chain if possible.
+
+Climate Data Operator (CDO) command line tool
+https://www.isimip.org/protocol/preparing-simulation-files/cdo-help/
