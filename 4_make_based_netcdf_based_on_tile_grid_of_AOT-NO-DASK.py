@@ -1,28 +1,21 @@
-
-
-#14-3-2023 now in testing 
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Mar 18 13:23:00 2023
+-
+@author: YARON
+"""
 
 from dask.distributed import Client
 import dask.array as da
 from dask.diagnostics import ProgressBar
 import xarray as xr
-from affine import Affine
 import os
-import glob
 import pandas as pd
-from glob import glob
-import rasterio
-import rioxarray
-import cftime
-import numpy as np
 import glob
-import netCDF4    
-import datetime as dt
-from netCDF4 import date2num,num2date
+import rioxarray
+import numpy as np
 from datetime import datetime
-import salem
-import geopandas as gpd
-from shapely.geometry import box
+
 
 
 ##parameters
@@ -32,62 +25,40 @@ dir_of_geotif_tile_file  = ['D:/test/h20v05','D:/test/h21v06','D:/test/h21v05']
 ##parameters
 
 for dir_of_geotif  in dir_of_geotif_tile_file:
- os.chdir(dir_of_geotif)
- filenames = glob.glob('*.tif')
- TIF =xr.open_rasterio(filenames[0])
- print(filenames[0][0:6])
- filenames_netcdf =filenames[0][0:6]
- geotiffs_da = TIF.to_dataset('band')
-
- X =geotiffs_da["x"]
- X = X.shape[0]
- Y = geotiffs_da["y"]
- Y= Y.shape[0]
- x_array= geotiffs_da.x
- x_c = x_array.data
- y_array= geotiffs_da.y
- y_c = y_array.data
+  os.chdir(dir_of_geotif)
+  
  
+  print(dir_of_geotif)
+
+  ds_list = []
+  geotiff_list = glob.glob("*.tif")
+  filenames_netcdf =geotiff_list[0][0:6]
+  orbit_date_datetime_list = []
+  for tif in geotiff_list:
+    
+    #print(tif)
+    orbit_date =  tif[18:29]
+    orbit_date_datetime = datetime.strptime(orbit_date, '%Y%j%H%M')
+    orbit_date_datetime_list.append(orbit_date_datetime)
+
+    geotiffs_temp = rioxarray.open_rasterio(tif,masked=True)
+    geotiffs_ds = geotiffs_temp.to_dataset('band')
+    count_band = len(geotiffs_ds.count())
+    count = list(range(count_band))
  
- filenames = glob.glob('*.tif')
+    geotiffs_ds = geotiffs_ds.rename({1: var_name})
  
- for tif in filenames:  
+    x = list(range(1, 1+len(count), 1))
+    x.pop(0) 
 
-  tiff_file = rasterio.open(tif)
-  tiff_file = tiff_file.read(1)
+    geotiffs_ds = geotiffs_ds.drop_vars(x)
+    geotiffs_ds.rio.write_crs('epsg:2039', inplace=True)#set esgpe of iseral 
 
-  orbit_date =  tif[18:29]
-  orbit_date_datetime = datetime.strptime(orbit_date, '%Y%j%H%M')
-  ncfile = netCDF4.Dataset(str(tif)+".nc",mode='w',format='NETCDF4_CLASSIC') 
-  lat_dim = ncfile.createDimension('y', Y)     # latitude axis lat
-  lon_dim = ncfile.createDimension('x', X)    # longitude axis lon
-  time_dim = ncfile.createDimension('time',  1) 
-  lat = ncfile.createVariable('y', np.float32, ('y',))
-  lat.units = 'meters'
-  lat.long_name = 'Y'
-  lon = ncfile.createVariable('x', np.float32, ('x',))
-  lon.units = 'meters'
-  lon.long_name = 'X'
-  time = ncfile.createVariable('time', np.float64, ('time',))
-  time.units = 'hours since 1800-01-01'
-  time.long_name = 'time'
-# Define a 3D variable to hold the data
-  temp = ncfile.createVariable('AOT',np.float64,('time','x','y')) # note: unlimited dimension is leftmost
-  temp.units = 'AOT' # unit here
-  temp.standard_name = var_name # this is a CF standard name
- 
-  nlats = len(lat_dim); nlons = len(lon_dim); ntimes = 1
-  # Write latitudes, longitudes.
-  lat[:] = y_c
-  lon[:] = x_c
-  temp[0,:,:] = tiff_file  # Appends data along unlimited dimension
-  times_arr = time[:]
-  dates = [orbit_date_datetime]#need to take time from the file name
-  times = date2num(dates, time.units)
-  time[:] = times
-  ncfile.close(); print('Dataset is closed!')
+    ds_list.append(geotiffs_ds) 
 
- file = glob.glob( '*.nc' )
-
- new_ds = xr.open_mfdataset(file, combine='by_coords')
- new_ds.to_netcdf(filenames_netcdf+var_name+".nc")
+  time_var = xr.Variable('time', orbit_date_datetime_list)
+  geotiffs_da = xr.concat(ds_list, dim=time_var) 
+  geotiffs_da.rio.write_crs('epsg:2039', inplace=True)#set esgpe of iseral 
+  geotiffs_da.to_netcdf(filenames_netcdf+"_"+var_name+".nc")
+  del(geotiffs_da)
+  print("end one netcdf")
