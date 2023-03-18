@@ -91,10 +91,10 @@ for nc in netcdf_to_loop:
     len(Station_code)
     df_main= pd.read_csv ("Data"+"_"+name_of_var[0]+".csv")#main data set after we clean,and put only stations that are in the METADATA
     temp_index=len(df_main)
-    x = pd.date_range(start='2000-01-01 00:00:00', end='2022-01-01 00:00:00', freq='30min')#len of date is 385728\
+    x = pd.date_range(start='2000-01-01 00:00:00', end='2022-01-01 00:00:00', freq='30min')
      
     x= x[0:len(df_main)]
-    df_main["date"] = x #this is 32592
+    df_main["date"] = x 
     df_main = df_main.set_index('date')
     df_main['Date of the stations'] = df_main.index
 
