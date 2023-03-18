@@ -1,6 +1,3 @@
-
-
-
 import xarray as xr
 import os
 import pandas as pd
@@ -24,16 +21,18 @@ import glob
 
 ##parameters
 dir_of_project_file = 'C:/PM2_5/data'
-output_file_netcdf_dir = "D:/test/REDY2023/"
+output_file_netcdf_dir = "D:/test/REDY2023b/"
 
 date_range_start = '2010-01-01'
 date_range_end = '2020-01-02'
 
-netcdf_to_loop = ['D:/test/h20v05/h20v05AOT.nc','D:/test/h21v06/h21v06AOT.nc','D:/test/h21v05/h21v05AOT.nc']#netcdf are tile
+netcdf_to_loop = ['D:/test/h20v05/h20v05_AOT.nc','D:/test/h21v06/h21v06_AOT.nc','D:/test/h21v05/h21v05_AOT.nc']#netcdf are tile
+
 
 csv_file = ["Ws","Temp","Rain","RH","pm10","pm25","NOx" ]#var of csv file 
 
 ##parameters
+
 
 
 os.chdir(dir_of_project_file)
@@ -136,35 +135,3 @@ for nc in netcdf_to_loop:
     print(nc_id+name_of_var[0])
     output_file_netcdf_name_and_dir = output_file_netcdf_dir +nc_id+name_of_var[0]+ ".nc"
     ds.to_netcdf(output_file_netcdf_name_and_dir)
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
