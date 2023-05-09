@@ -5,18 +5,12 @@ Created on Tue Mar 14 19:31:32 2023
 @author: YARON
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Feb 21 09:10:00 2023
 
-@author: yaron.michael
-"""
 import os
 import cdsapi
 
 
 
-# Previous_dir C:\Users\..\Desktop\python
 
 ##parameters
 dir_to_download = 'D:/pbl'
